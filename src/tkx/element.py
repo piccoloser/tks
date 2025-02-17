@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Generator
+from typing import Generator, Union
 from tkx.constants import INVALID_CONTAINER_PROPERTIES
 from tkx.core import TkxElement, translate_css, update_style
 from tkx.error import DuplicateIdError
@@ -24,7 +24,7 @@ class Element(TkxElement):
                     other_kwargs[translate_css(k)] = value
 
         # List of direct children of this Element.
-        self.elements: list[Element] | None = None
+        self.elements: Union[list[Element], None] = None
 
         # Object to which this Element is added.
         self.parent = parent
@@ -42,7 +42,7 @@ class Element(TkxElement):
         else:
             self.widget = widget(self.parent, **kwargs)
 
-        fallback: str | None = None
+        fallback: Union[str, None] = None
         if self.widget_name == "frame":
             self.widget.pack_propagate(0)
 
@@ -92,7 +92,7 @@ class Element(TkxElement):
 
         self.widget.configure(**kwargs)
 
-    def parents(self) -> Generator[Element]:
+    def parents(self) -> Generator[Element, None, None]:
         """Returns an ascending generator of an `Element`'s parents."""
         # Get a reference to the current container.
         ref = self.__iter_parent

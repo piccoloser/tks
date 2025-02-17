@@ -1,3 +1,4 @@
+from typing import Union
 from pathlib import Path
 from tkx.constants import (
     CSS_PROPERTY_NAME_TRANSLATIONS,
@@ -41,7 +42,7 @@ class Stylesheet:
         """
         return {k: self.var(str(v)) for k, v in properties.items()}
 
-    def get(self, name: str) -> str | None:
+    def get(self, name: str) -> Union[str, None]:
         """
         Return the CSS block associated with `name` or `None` if it does
         not exist.
@@ -56,7 +57,7 @@ class Stylesheet:
         # Remove any leftover curly braces and return the result.
         return (*map(lambda i: re.sub(MATCH_BRACES, "", i), result),)
 
-    def get_property(self, widget_name: str, property: str) -> str | None:
+    def get_property(self, widget_name: str, property: str) -> Union[str, None]:
         """Return the value of a property given a selector and property name."""
         if self.styles.get(widget_name) is None:
             print(f"get_property found no CSS style for {widget_name}.")
@@ -108,7 +109,7 @@ class Stylesheet:
             filter(lambda k: results.get(k) is None, translated_results.items())
         )
 
-    def var(self, value: str) -> str | None:
+    def var(self, value: str) -> Union[str, None]:
         """Return the value associated with a given variable name."""
         name = re.findall(MATCH_VAR_NAME, value)
 
