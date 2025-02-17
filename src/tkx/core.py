@@ -1,6 +1,6 @@
 from __future__ import annotations
 from tkinter import Widget
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Union
 from tkx.constants import (
     CSS_PROPERTY_NAME_TRANSLATIONS,
     INHERITED_PROPERTIES,
@@ -17,9 +17,9 @@ class TkxElement:
     def __init__(self):
         super().__init__()
         self.__display: Literal["block", "flex", "grid", "none"] = "block"
-        self.__parent: TkxElement | None = None
-        self.__style: dict[str, str] | None = None
-        self.__widget: Widget | None = None
+        self.__parent: Union[TkxElement, None] = None
+        self.__style: Union[dict[str, str], None] = None
+        self.__widget: Union[Widget, None] = None
 
     def add(self, widget: Widget, **kwargs):
         """
@@ -63,7 +63,7 @@ class TkxElement:
 
         raise NotImplementedError()
 
-    def get_style_of(self, name: str, fallback: str | None = None) -> dict[str, str] | None:
+    def get_style_of(self, name: str, fallback: Union[str, None] = None) -> Union[dict[str, str], None]:
         """
         Returns the style dictionary associated with the given name if it
         can be found in the root window's stylesheet. Accepts an optional
@@ -124,7 +124,7 @@ class TkxElement:
         return self.parent.root
 
     @property
-    def style(self) -> dict[str, str] | None:
+    def style(self) -> Union[dict[str, str], None]:
         """
         Returns the style dictionary associated with this object or
         creates a new `dict` and returns it.
@@ -135,11 +135,11 @@ class TkxElement:
         return self.__style
 
     @style.setter
-    def style(self, value: dict[str, str] | None) -> None:
+    def style(self, value: Union[dict[str, str], None]) -> None:
         self.__style = value
 
     @property
-    def widget(self) -> Widget | None:
+    def widget(self) -> Union[Widget, None]:
         """Returns the widget associated with this object or `None`."""
         return self.__widget
 
@@ -148,19 +148,19 @@ class TkxElement:
         self.__widget = value
 
     @property
-    def widget_name(self) -> str | None:
+    def widget_name(self) -> Union[str, None]:
         """Returns the lowercase name of this object's widget or `None`."""
         if self.widget is not None:
             return re.search(r"\w+", str(self.widget).split(".")[-1])[0]
         return None
 
-    def __getattr__(self, attr: str) -> Any | None:
+    def __getattr__(self, attr: str) -> Union[Any, None]:
         # If no attribute is found in self, check self.widget.
         if self[attr] is None and self.widget is not None:
             return getattr(self.widget, attr)
         return self[attr]
 
-    def __getitem__(self, attr: str) -> Any | None:
+    def __getitem__(self, attr: str) -> Union[Any, None]:
         return self.__dict__.get(attr)
 
     def __setitem__(self, key: str, value: Any) -> None:
@@ -198,36 +198,8 @@ def update_style(fn):
     Takes a style dictionary and/or keyword arguments, then parses
     the given values as CSS before configuring the widget wrapped by
     the caller. Dictionary values are overwritten by keyword arguments.
-
-    #### The following examples require `--red` to be defined in the stylesheet.
-    ### Example 1
-
-    ```python
-    my_element.configure(color="var(--red)")
-    ```
-
-    becomes `my_element.configure(fg="#f00")`
-
-    ### Example 2
-
-    ```python
-    my_style = {"color": "var(--red)"}
-    my_element.configure(my_style)
-    ```
-
-    becomes `my_element.configure(fg="#f00")`
-
-    ### Example 3
-
-    ```python
-    my_style = {"color": "var(--red)"}
-    my_element.configure(my_style, width=50)
-    ```
-
-    becomes `my_element.configure(fg="#f00", width=50)`
     """
-
-    def func(self, args: dict[str, Any] | None = None, **kwargs) -> Callable:
+    def func(self, args: Union[dict[str, Any], None] = None, **kwargs) -> Callable:
         # If both a positional dictionary and keyword arguments
         # are provided, update the dictionary with the provided
         # keyword arguments.

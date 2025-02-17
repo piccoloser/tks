@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "tkx"
-version = "0.1.1"
+version = "0.1.2"
 description = ""
 authors = ["Hunter Logan <_@piccoloser.com>"]
 readme = "README.md"
 packages = [{include = "tkx", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.8"
 
 
 [tool.poetry.group.dev.dependencies]
